@@ -1,0 +1,67 @@
+---
+title: "ANA 515 Assignment 2"
+author: "Amanda Thiell"
+date: "4/9/2022"
+output: word_document
+---
+
+The data I am reviewing explores a multitude of different statistics around different college majors and associated employment rates. It also includes a breakdown of gender split, major category, job received post school completion, and unemployment rate associated with each major. All data is stated as being from "American Community Survey 2010-2012 Public Use Microdata Series." All data is stored in csv formatting with the rows representing a major each and the columns being the different data points assoiated. Using this information, I'd like to review if there are any majors (or major categories) that have a very high gender inequality. I would also be interested to see how college major affects employment rate (looking at both highest employment compared to lowest employment).
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r install, include=FALSE}
+options(repos = list(CRAN="http://cran.rstudio.com/"))
+install.packages("tidyverse")
+install.packages("knitr")
+install.packages("bslib")
+```
+
+```{r packages, include=FALSE}
+library(tidyverse)
+library(knitr)
+library(bslib)
+```
+
+```{r recentgrads, include=FALSE}
+url <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/recent-grads.csv"
+recentgrads <- read.csv(url) #To read the data, I used the function read_csv which can be found as part of read.table in the R utils package (installed by default).
+glimpse(recentgrads)
+```
+
+```{r percent, include=FALSE}
+install.packages("formattable")
+library("formattable")
+formattable::percent(recentgrads[, c(15)])
+```
+
+```{r rename, include=FALSE}
+recentgrads1 <- rename(recentgrads, Percent_Female = ShareWomen)
+```
+
+```{r arrange, include=FALSE}
+arrange(recentgrads1,Unemployment_rate)
+```
+
+```{r majorcategory, include=FALSE}
+group_by(recentgrads1,Major_category)
+```
+
+This dataframe has `r nrow(recentgrads1)` rows and `r ncol(recentgrads1)` columns. The names of the columns and a brief description of some examples are in the table below:
+
+```{r texttable, include=TRUE}
+text_tbl <- data.frame( Names = c("Major_category","Percent_Female","Unemployment_rate"), Description = c("Major category attached per Carnevale et a","Percent of graduates that are female for the associated major","Rate of unemployment based on the number unemployed divided by the total") ) 
+text_tbl1<-data.frame(text_tbl$Names, text_tbl$Description)
+text_tbl1
+```
+
+```{r subset, include=FALSE}
+grad_subset <- select(recentgrads1, Total, Percent_Female, Unemployment_rate)
+```
+
+```{r summary, include = TRUE}
+Summarytable<-summary(grad_subset, exclude=r(""," ")) #attempt to remove blanks from individual lines for food science major, etc
+print(Summarytable)
+```
+
